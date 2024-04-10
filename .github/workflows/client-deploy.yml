@@ -12,6 +12,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Check Node v
+        run: node -v
+
       - name: nextjs-cache
         uses: actions/cache@v3
         with:
