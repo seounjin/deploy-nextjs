@@ -2,4 +2,4 @@ REPOSITORY=/home/ubuntu/deploy
 
 cd $REPOSITORY
 
-yarn deploy
+sudo yarn deploy
