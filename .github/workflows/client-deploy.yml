@@ -15,47 +15,55 @@ jobs:
       - name: Check Node v
         run: node -v
 
-      - name: nextjs-cache
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
+        id: yarn-cache
         with:
-          path: ${{ github.workspace }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
+          path: "**/node_modules"
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-
+
+      # - name: nextjs-cache
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: ${{ github.workspace }}/.next/cache
+      #     key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install Dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install
 
       - name: Nextjs Build
         run: yarn build
 
-      - name: Make zip file
-        run: zip -qq -r ./$GITHUB_SHA.zip .
-        shell: bash
+      # - name: Make zip file
+      #   run: zip -qq -r ./$GITHUB_SHA.zip .
+      #   shell: bash
 
-      - name: Access to AWS
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRETE_ACCESS_KEY }}
-          aws-region: ap-northeast-2
+      # - name: Access to AWS
+      #   uses: aws-actions/configure-aws-credentials@v3
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRETE_ACCESS_KEY }}
+      #     aws-region: ap-northeast-2
 
-      - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://${{ secrets.S3_BUCKET_NAME }}/$GITHUB_SHA.zip
+      # - name: Upload to S3
+      #   run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://${{ secrets.S3_BUCKET_NAME }}/$GITHUB_SHA.zip
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Access to AWS
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRETE_ACCESS_KEY }}
-          aws-region: ap-northeast-2
-      - name: Deploy to EC2 with CodeDeploy
-        run: aws deploy create-deployment
-          --application-name sung-jin-nextjs-code-deploy
-          --deployment-config-name CodeDeployDefault.AllAtOnce
-          --deployment-group-name sung-jin-nextjs-code-deploy
-          --s3-location bucket=${{ secrets.S3_BUCKET_NAME }},bundleType=zip,key=$GITHUB_SHA.zip
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Access to AWS
+  #       uses: aws-actions/configure-aws-credentials@v3
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRETE_ACCESS_KEY }}
+  #         aws-region: ap-northeast-2
+  #     - name: Deploy to EC2 with CodeDeploy
+  #       run: aws deploy create-deployment
+  #         --application-name sung-jin-nextjs-code-deploy
+  #         --deployment-config-name CodeDeployDefault.AllAtOnce
+  #         --deployment-group-name sung-jin-nextjs-code-deploy
+  #         --s3-location bucket=${{ secrets.S3_BUCKET_NAME }},bundleType=zip,key=$GITHUB_SHA.zip
