@@ -29,14 +29,14 @@ jobs:
       - name: Nextjs Build
         run: yarn build
 
-      - name: Make zip file
-        run: zip -qq -r ./$GITHUB_SHA.zip .
-        shell: bash
-
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Make zip file
+        run: zip -qq -r ./$GITHUB_SHA.zip .
+        shell: bash
+
       - name: Access to AWS
         uses: aws-actions/configure-aws-credentials@v3
         with:
