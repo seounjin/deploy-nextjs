@@ -6,7 +6,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <h1>Git Action 연습입니다. h1</h1>
       <h2>Git Action 연습입니다. h2</h2>
-      <h3>Git Action 연습 h3</h3>
+      <h3>Git Action 연습입니다. h3</h3>
       <h4>Git Action 연습 h4</h4>
       <Button>차크라</Button>
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
