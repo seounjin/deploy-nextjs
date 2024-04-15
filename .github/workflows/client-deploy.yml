@@ -53,3 +53,9 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRETE_ACCESS_KEY }}
           aws-region: ap-northeast-2
+      - name: Deploy to EC2 with CodeDeploy
+        run: aws deploy create-deployment
+          --application-name sung-jin-nextjs-code-deploy
+          --deployment-config-name CodeDeployDefault.AllAtOnce
+          --deployment-group-name sung-jin-nextjs-code-deploy
+          --s3-location bucket=${{ secrets.S3_BUCKET_NAME }},bundleType=zip,key=$GITHUB_SHA.zip
